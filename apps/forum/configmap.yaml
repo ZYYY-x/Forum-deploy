@@ -20,7 +20,7 @@ data:
   FORUM_MAIL_USERNAME: "19843041836@163.com"
   FORUM_MAIL_SSL_TRUST: "smtp.163.com"
   FORUM_DB_POOL_MAX: "8"
-  FORUM_JWT_EXPIRE_DAYS: "8"
+  FORUM_JWT_EXPIRE_DAYS: "7"
   FORUM_USER_DB_URL: "jdbc:mysql://database-1.clg22e2uokqs.ap-northeast-1.rds.amazonaws.com:3306/forum_user?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8"
   FORUM_CONTENT_DB_URL: "jdbc:mysql://database-1.clg22e2uokqs.ap-northeast-1.rds.amazonaws.com:3306/forum_content?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8"
   FORUM_NOTIFICATION_DB_URL: "jdbc:mysql://database-1.clg22e2uokqs.ap-northeast-1.rds.amazonaws.com:3306/forum_notification?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8"
