@@ -12,16 +12,16 @@ resources:
 # secret.example.yaml 不纳入 resources：真实 Secret 由集群侧创建，不入 Git。
 images:
   - name: 18.183.238.1/forum/forum-gateway
-    newTag: 3
+    newTag: "3"
   - name: 18.183.238.1/forum/forum-user-service
-    newTag: 3
+    newTag: "3"
   - name: 18.183.238.1/forum/forum-content-service
-    newTag: 3
+    newTag: "3"
   - name: 18.183.238.1/forum/forum-notification-service
-    newTag: 3
+    newTag: "3"
   - name: 18.183.238.1/forum/forum-media-service
-    newTag: 3
+    newTag: "3"
   - name: 18.183.238.1/forum/forum-weather-service
-    newTag: 3
+    newTag: "3"
   - name: 18.183.238.1/forum/forum-frontend
-    newTag: 3
+    newTag: "3"
