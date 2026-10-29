@@ -1,0 +1,174 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: forum-dashboard-business
+  namespace: forum
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/part-of: forum
+data:
+  forum-business.json: |-
+    {
+      "annotations": {"list": []},
+      "editable": true,
+      "graphTooltip": 0,
+      "links": [],
+      "panels": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {"defaults": {"unit": "percentunit"}, "overrides": []},
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+          "id": 1,
+          "targets": [{"expr": "sum(rate(forum_topic_cache_total{result=\"hit\"}[5m])) / clamp_min(sum(rate(forum_topic_cache_total[5m])), 0.001)", "legendFormat": "topic list cache hit", "refId": "A"}],
+          "title": "Topic List Cache Hit Ratio",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+          "id": 2,
+          "targets": [{"expr": "sum(rate(forum_interaction_total[5m])) by (type)", "legendFormat": "{{type}}", "refId": "A"}],
+          "title": "Interactions by Type",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+          "id": 3,
+          "targets": [{"expr": "sum(rate(forum_media_upload_total{result=\"success\"}[5m])) by (kind)", "legendFormat": "upload {{kind}}", "refId": "A"}, {"expr": "sum(rate(forum_media_fetch_total{result=\"failure\"}[5m]))", "legendFormat": "fetch failure/s", "refId": "B"}],
+          "title": "Media Upload / Fetch",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+          "id": 4,
+          "targets": [{"expr": "sum(rate(forum_weather_request_total[5m])) by (result)", "legendFormat": "{{result}}", "refId": "A"}],
+          "title": "Weather Requests by Result",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+          "id": 5,
+          "targets": [{"expr": "forum_notification_pending", "legendFormat": "pending", "refId": "A"}, {"expr": "forum_dau", "legendFormat": "DAU", "refId": "B"}, {"expr": "forum_users_total", "legendFormat": "users total", "refId": "C"}],
+          "title": "Notification Backlog / Users",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+          "id": 6,
+          "targets": [{"expr": "sum(rate(forum_mq_publish_total[5m])) by (event, result)", "legendFormat": "{{event}} {{result}}", "refId": "A"}, {"expr": "sum(rate(forum_notification_consume_total[5m])) by (result)", "legendFormat": "consume {{result}}", "refId": "B"}],
+          "title": "MQ Publish / Consume",
+          "type": "timeseries"
+        }
+      ],
+      "refresh": "15s",
+      "schemaVersion": 39,
+      "tags": ["forum", "business"],
+      "templating": {"list": []},
+      "time": {"from": "now-1h", "to": "now"},
+      "timezone": "browser",
+      "title": "Forum Business",
+      "uid": "forum-business",
+      "version": 1
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: forum-dashboard-overview
+  namespace: forum
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/part-of: forum
+data:
+  forum-overview.json: |-
+    {
+      "annotations": {"list": []},
+      "editable": true,
+      "graphTooltip": 0,
+      "links": [],
+      "panels": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+          "id": 1,
+          "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+          "targets": [{"expr": "sum(up{job=~\"forum-.*\"})", "legendFormat": "services up", "refId": "A"}],
+          "title": "Services Up",
+          "type": "stat"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {"defaults": {"unit": "reqps"}, "overrides": []},
+          "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+          "id": 2,
+          "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+          "targets": [{"expr": "sum(rate(http_server_requests_seconds_count[5m]))", "legendFormat": "QPS", "refId": "A"}],
+          "title": "HTTP QPS",
+          "type": "stat"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {"defaults": {"unit": "reqps"}, "overrides": []},
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+          "id": 3,
+          "targets": [{"expr": "sum(rate(http_server_requests_seconds_count[5m])) by (application)", "legendFormat": "{{application}}", "refId": "A"}],
+          "title": "QPS by Service",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+          "id": 4,
+          "targets": [{"expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket[5m])) by (le, application))", "legendFormat": "{{application}}", "refId": "A"}],
+          "title": "HTTP P95 Latency",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {"defaults": {"unit": "percentunit"}, "overrides": []},
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+          "id": 5,
+          "targets": [{"expr": "sum(rate(http_server_requests_seconds_count{status=~\"5..\"}[5m])) by (application) / clamp_min(sum(rate(http_server_requests_seconds_count[5m])) by (application), 0.001)", "legendFormat": "{{application}}", "refId": "A"}],
+          "title": "HTTP 5xx Ratio",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+          "id": 6,
+          "targets": [{"expr": "sum(rate(forum_auth_login_total{result=\"failure\"}[5m]))", "legendFormat": "login failure/s", "refId": "A"}, {"expr": "sum(rate(forum_gateway_auth_rejected_total[5m]))", "legendFormat": "gateway reject/s", "refId": "B"}],
+          "title": "Auth Failure Signals",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+          "id": 7,
+          "targets": [{"expr": "sum(rate(forum_topic_created_total{result=\"success\"}[5m]))", "legendFormat": "topics/s", "refId": "A"}, {"expr": "sum(rate(forum_comment_created_total{result=\"success\"}[5m]))", "legendFormat": "comments/s", "refId": "B"}],
+          "title": "Content Creation",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
+          "id": 8,
+          "targets": [{"expr": "sum(rate(forum_notification_consumed_total[5m]))", "legendFormat": "notifications/s", "refId": "A"}, {"expr": "sum(rate(forum_mail_sent_total{result=\"success\"}[5m]))", "legendFormat": "mail/s", "refId": "B"}],
+          "title": "Notification & Mail",
+          "type": "timeseries"
+        }
+      ],
+      "refresh": "15s",
+      "schemaVersion": 39,
+      "tags": ["forum", "microservices"],
+      "templating": {"list": []},
+      "time": {"from": "now-1h", "to": "now"},
+      "timezone": "browser",
+      "title": "Forum Overview",
+      "uid": "forum-overview",
+      "version": 1
+    }

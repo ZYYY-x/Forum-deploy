@@ -52,6 +52,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: forum-gateway
+  labels:
+    app: forum-gateway
+    tier: forum-backend
   namespace: forum
 spec:
   selector: { app: forum-gateway }
@@ -113,6 +116,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: forum-user-service
+  labels:
+    app: forum-user-service
+    tier: forum-backend
   namespace: forum
 spec:
   selector: { app: forum-user-service }
@@ -174,6 +180,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: forum-content-service
+  labels:
+    app: forum-content-service
+    tier: forum-backend
   namespace: forum
 spec:
   selector: { app: forum-content-service }
@@ -235,6 +244,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: forum-notification-service
+  labels:
+    app: forum-notification-service
+    tier: forum-backend
   namespace: forum
 spec:
   selector: { app: forum-notification-service }
@@ -296,6 +308,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: forum-media-service
+  labels:
+    app: forum-media-service
+    tier: forum-backend
   namespace: forum
 spec:
   selector: { app: forum-media-service }
@@ -357,6 +372,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: forum-weather-service
+  labels:
+    app: forum-weather-service
+    tier: forum-backend
   namespace: forum
 spec:
   selector: { app: forum-weather-service }
@@ -409,6 +427,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: forum-frontend
+  labels:
+    app: forum-frontend
+    tier: forum-backend
   namespace: forum
 spec:
   selector: { app: forum-frontend }

@@ -7,6 +7,9 @@ resources:
   - configmap.yaml
   - deployments.yaml
   - httproute.yaml
+  - monitoring/servicemonitor.yaml
+  - monitoring/dashboards.yaml
+  - monitoring/prometheusrule.yaml
 
 # CI（Jenkins）构建完成后只更新这里的 tag，Argo CD 检测到 Git 变化自动同步。
 # secret.example.yaml 不纳入 resources：真实 Secret 由集群侧创建，不入 Git。

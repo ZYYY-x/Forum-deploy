@@ -1,0 +1,105 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: forum-rules
+  namespace: forum
+  labels:
+    release: prometheus
+    app.kubernetes.io/part-of: forum
+spec:
+  groups:
+    - name: forum-availability
+      rules:
+        - alert: ForumServiceDown
+          expr: up{job=~"forum-.*"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.job }} 不可达"
+            description: "Prometheus 已连续 1 分钟无法抓取 {{ $labels.instance }}。"
+  
+        - alert: ForumHighHttp5xx
+          expr: |
+            sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m])) by (application)
+            /
+            clamp_min(sum(rate(http_server_requests_seconds_count[5m])) by (application), 0.001)
+            > 0.05
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.application }} 5xx 比例过高"
+            description: "5 分钟 5xx 比例 > 5%。"
+  
+        - alert: ForumHighP95Latency
+          expr: |
+            histogram_quantile(0.95,
+              sum(rate(http_server_requests_seconds_bucket[5m])) by (le, application)
+            ) > 2
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.application }} P95 延迟超过 2s"
+            description: "检查慢 SQL、Feign 下游、Redis/MinIO/RabbitMQ。"
+  
+    - name: forum-business
+      rules:
+        - alert: ForumLoginFailureSpike
+          expr: sum(rate(forum_auth_login_total{result="failure"}[5m])) > 5
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "登录失败速率突增"
+            description: "可能存在撞库或认证异常。"
+  
+        - alert: ForumGatewayAuthRejected
+          expr: sum(rate(forum_gateway_auth_rejected_total[5m])) > 10
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "网关 JWT 拒绝速率突增"
+            description: "检查 token 过期、客户端异常或攻击流量。"
+  
+        - alert: ForumNotificationConsumeFailure
+          expr: sum(rate(forum_notification_consume_total{result="failure"}[5m])) > 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "通知事件消费失败"
+            description: "检查 RabbitMQ、数据库唯一键和消息格式。"
+  
+        - alert: ForumMailSendFailure
+          expr: sum(rate(forum_mail_sent_total{result="failure"}[5m])) > 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "邮件发送失败"
+            description: "检查 163 SMTP 授权码、网络和发件频率限制。"
+  
+        - alert: ForumWeatherFailureRate
+          expr: |
+            sum(rate(forum_weather_request_total{result="failure"}[5m]))
+            /
+            clamp_min(sum(rate(forum_weather_request_total[5m])), 0.001)
+            > 0.2
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "天气接口失败率过高"
+            description: "检查 QWeather key、配额和 API 可用性。"
+  
+        - alert: ForumNotificationBacklog
+          expr: forum_notification_pending > 1000
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "站内通知积压"
+            description: "通知表行数超过 1000，检查消费和清理策略。"
