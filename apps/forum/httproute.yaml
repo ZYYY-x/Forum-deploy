@@ -1,0 +1,23 @@
+﻿apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: forum-route
+  namespace: forum
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main-gateway
+      namespace: cilium-gateway
+      sectionName: http
+  hostnames:
+    - forum.zyyyx.work
+  rules:
+    - matches:
+        - path: { type: PathPrefix, value: / }
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: forum-frontend
+          port: 8080
+          weight: 1

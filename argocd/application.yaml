@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: forum
-  namespace: argocd
+  namespace: devops-tools
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:

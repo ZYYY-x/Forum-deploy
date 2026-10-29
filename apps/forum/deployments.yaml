@@ -1,0 +1,367 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forum-gateway
+  namespace: forum
+  labels: { app: forum-gateway }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: forum-gateway }
+  template:
+    metadata:
+      labels: { app: forum-gateway }
+    spec:
+      containers:
+        - name: app
+          image: 18.183.238.1/forum/forum-gateway:v1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: { name: forum-config }
+            - secretRef: { name: forum-secrets }
+          env:
+            - { name: SW_AGENT_NAME, value: forum-gateway }
+            - { name: SERVER_PORT, value: "4433" }
+            - { name: MANAGEMENT_PORT, value: "9080" }
+          ports:
+            - { name: http, containerPort: 4433 }
+            - { name: management, containerPort: 9080 }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 9080 }
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 9080 }
+            initialDelaySeconds: 150
+            periodSeconds: 20
+            failureThreshold: 6
+          resources:
+            requests: { cpu: 100m, memory: 512Mi }
+            limits: { cpu: 800m, memory: 768Mi }
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forum-gateway
+  namespace: forum
+spec:
+  selector: { app: forum-gateway }
+  ports:
+    - { name: http, port: 4433, targetPort: 4433 }
+    - { name: management, port: 9080, targetPort: 9080 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forum-user-service
+  namespace: forum
+  labels: { app: forum-user-service }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: forum-user-service }
+  template:
+    metadata:
+      labels: { app: forum-user-service }
+    spec:
+      containers:
+        - name: app
+          image: 18.183.238.1/forum/forum-user-service:v1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: { name: forum-config }
+            - secretRef: { name: forum-secrets }
+          env:
+            - { name: SW_AGENT_NAME, value: forum-user-service }
+            - { name: SERVER_PORT, value: "8082" }
+            - { name: MANAGEMENT_PORT, value: "9082" }
+          ports:
+            - { name: http, containerPort: 8082 }
+            - { name: management, containerPort: 9082 }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 9082 }
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 9082 }
+            initialDelaySeconds: 150
+            periodSeconds: 20
+            failureThreshold: 6
+          resources:
+            requests: { cpu: 100m, memory: 512Mi }
+            limits: { cpu: 800m, memory: 768Mi }
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forum-user-service
+  namespace: forum
+spec:
+  selector: { app: forum-user-service }
+  ports:
+    - { name: http, port: 8082, targetPort: 8082 }
+    - { name: management, port: 9082, targetPort: 9082 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forum-content-service
+  namespace: forum
+  labels: { app: forum-content-service }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: forum-content-service }
+  template:
+    metadata:
+      labels: { app: forum-content-service }
+    spec:
+      containers:
+        - name: app
+          image: 18.183.238.1/forum/forum-content-service:v1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: { name: forum-config }
+            - secretRef: { name: forum-secrets }
+          env:
+            - { name: SW_AGENT_NAME, value: forum-content-service }
+            - { name: SERVER_PORT, value: "8083" }
+            - { name: MANAGEMENT_PORT, value: "9083" }
+          ports:
+            - { name: http, containerPort: 8083 }
+            - { name: management, containerPort: 9083 }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 9083 }
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 9083 }
+            initialDelaySeconds: 150
+            periodSeconds: 20
+            failureThreshold: 6
+          resources:
+            requests: { cpu: 100m, memory: 512Mi }
+            limits: { cpu: 800m, memory: 768Mi }
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forum-content-service
+  namespace: forum
+spec:
+  selector: { app: forum-content-service }
+  ports:
+    - { name: http, port: 8083, targetPort: 8083 }
+    - { name: management, port: 9083, targetPort: 9083 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forum-notification-service
+  namespace: forum
+  labels: { app: forum-notification-service }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: forum-notification-service }
+  template:
+    metadata:
+      labels: { app: forum-notification-service }
+    spec:
+      containers:
+        - name: app
+          image: 18.183.238.1/forum/forum-notification-service:v1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: { name: forum-config }
+            - secretRef: { name: forum-secrets }
+          env:
+            - { name: SW_AGENT_NAME, value: forum-notification-service }
+            - { name: SERVER_PORT, value: "8084" }
+            - { name: MANAGEMENT_PORT, value: "9084" }
+          ports:
+            - { name: http, containerPort: 8084 }
+            - { name: management, containerPort: 9084 }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 9084 }
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 9084 }
+            initialDelaySeconds: 150
+            periodSeconds: 20
+            failureThreshold: 6
+          resources:
+            requests: { cpu: 100m, memory: 512Mi }
+            limits: { cpu: 800m, memory: 768Mi }
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forum-notification-service
+  namespace: forum
+spec:
+  selector: { app: forum-notification-service }
+  ports:
+    - { name: http, port: 8084, targetPort: 8084 }
+    - { name: management, port: 9084, targetPort: 9084 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forum-media-service
+  namespace: forum
+  labels: { app: forum-media-service }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: forum-media-service }
+  template:
+    metadata:
+      labels: { app: forum-media-service }
+    spec:
+      containers:
+        - name: app
+          image: 18.183.238.1/forum/forum-media-service:v1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: { name: forum-config }
+            - secretRef: { name: forum-secrets }
+          env:
+            - { name: SW_AGENT_NAME, value: forum-media-service }
+            - { name: SERVER_PORT, value: "8085" }
+            - { name: MANAGEMENT_PORT, value: "9085" }
+          ports:
+            - { name: http, containerPort: 8085 }
+            - { name: management, containerPort: 9085 }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 9085 }
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 9085 }
+            initialDelaySeconds: 150
+            periodSeconds: 20
+            failureThreshold: 6
+          resources:
+            requests: { cpu: 100m, memory: 512Mi }
+            limits: { cpu: 800m, memory: 768Mi }
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forum-media-service
+  namespace: forum
+spec:
+  selector: { app: forum-media-service }
+  ports:
+    - { name: http, port: 8085, targetPort: 8085 }
+    - { name: management, port: 9085, targetPort: 9085 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forum-weather-service
+  namespace: forum
+  labels: { app: forum-weather-service }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: forum-weather-service }
+  template:
+    metadata:
+      labels: { app: forum-weather-service }
+    spec:
+      containers:
+        - name: app
+          image: 18.183.238.1/forum/forum-weather-service:v1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: { name: forum-config }
+            - secretRef: { name: forum-secrets }
+          env:
+            - { name: SW_AGENT_NAME, value: forum-weather-service }
+            - { name: SERVER_PORT, value: "8086" }
+            - { name: MANAGEMENT_PORT, value: "9086" }
+          ports:
+            - { name: http, containerPort: 8086 }
+            - { name: management, containerPort: 9086 }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 9086 }
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 9086 }
+            initialDelaySeconds: 150
+            periodSeconds: 20
+            failureThreshold: 6
+          resources:
+            requests: { cpu: 100m, memory: 512Mi }
+            limits: { cpu: 800m, memory: 768Mi }
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forum-weather-service
+  namespace: forum
+spec:
+  selector: { app: forum-weather-service }
+  ports:
+    - { name: http, port: 8086, targetPort: 8086 }
+    - { name: management, port: 9086, targetPort: 9086 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forum-frontend
+  namespace: forum
+  labels: { app: forum-frontend }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: forum-frontend }
+  template:
+    metadata:
+      labels: { app: forum-frontend }
+    spec:
+      containers:
+        - name: web
+          image: 18.183.238.1/forum/forum-frontend:v1
+          imagePullPolicy: IfNotPresent
+          env:
+            - { name: GATEWAY_UPSTREAM, value: "http://forum-gateway:4433" }
+          ports:
+            - { name: http, containerPort: 8080 }
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 300m, memory: 256Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forum-frontend
+  namespace: forum
+spec:
+  selector: { app: forum-frontend }
+  ports:
+    - { name: http, port: 8080, targetPort: 8080 }

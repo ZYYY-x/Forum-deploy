@@ -2,9 +2,9 @@ apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: forum
-  namespace: argocd
+  namespace: devops-tools
 spec:
-  description: "Forum microservices (test environment)"
+  description: "Forum microservices (dev / AWS k8s-master)"
   sourceRepos:
     - https://github.com/ZYYY-x/Forum-deploy.git
   destinations:
@@ -13,3 +13,6 @@ spec:
   clusterResourceWhitelist:
     - group: ""
       kind: Namespace
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"

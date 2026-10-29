@@ -5,29 +5,23 @@ namespace: forum
 resources:
   - namespace.yaml
   - configmap.yaml
-  - forum-gateway.yaml
-  - forum-user-service.yaml
-  - forum-content-service.yaml
-  - forum-notification-service.yaml
-  - forum-media-service.yaml
-  - forum-weather-service.yaml
-  - forum-frontend.yaml
-  - ingress.yaml
+  - deployments.yaml
+  - httproute.yaml
 
-# Jenkins 在构建完成后更新这些 tag；Argo CD 检测到 Git 变化会自动同步。
-# 生产建议使用不可变 tag，例如 build-123 或 git SHA。
+# CI（Jenkins）构建完成后只更新这里的 tag，Argo CD 检测到 Git 变化自动同步。
+# secret.example.yaml 不纳入 resources：真实 Secret 由集群侧创建，不入 Git。
 images:
   - name: 18.183.238.1/forum/forum-gateway
-    newTag: latest
+    newTag: v1
   - name: 18.183.238.1/forum/forum-user-service
-    newTag: latest
+    newTag: v1
   - name: 18.183.238.1/forum/forum-content-service
-    newTag: latest
+    newTag: v1
   - name: 18.183.238.1/forum/forum-notification-service
-    newTag: latest
+    newTag: v1
   - name: 18.183.238.1/forum/forum-media-service
-    newTag: latest
+    newTag: v1
   - name: 18.183.238.1/forum/forum-weather-service
-    newTag: latest
+    newTag: v1
   - name: 18.183.238.1/forum/forum-frontend
-    newTag: latest
+    newTag: v2
